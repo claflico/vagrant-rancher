@@ -24,18 +24,37 @@ services:
     restart: unless-stopped
     volumes:
     - '/etc/localtime:/etc/localtime:ro'
-  nginx-proxy:
-    image: jwilder/nginx-proxy:alpine
+    - "${CONTAINER_VOL_DIR}/consul_data:/consul/data"
+  traefik:
+    image: traefik
+    environment:
+      SERVICE_80_NAME: traefik-http
+      SERVICE_80_CHECK_TCP: 'true'
+      SERVICE_443_NAME: traefik-https
+      SERVICE_443_CHECK_TCP: 'true'
+      SERVICE_8080_NAME: traefik-admin
+      SERVICE_8080_CHECK_TCP: 'true'
     network_mode: bridge
+    volumes:
+    - '/etc/localtime:/etc/localtime:ro'
+    - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    - '${CONTAINER_VOL_DIR}/traefik:/etc/traefik/'
     ports:
+    - 443:443/tcp
     - 80:80/tcp
+    - $TRAEFIK_ADMIN_PORT:8080/tcp
+    command:
+    - traefik
+    - --api
+    - --docker
+    - --docker.domain=$TRAEFIK_DOMAIN
+    - --loglevel=info
+    - --ping
+    - --entryPoints=Name:http Address::80
+    - --docker.exposedbydefault=false
     labels:
       io.rancher.container.pull_image: always
       io.rancher.container.hostname_override: container_name
-    restart: unless-stopped
-    volumes:
-    - '/etc/localtime:/etc/localtime:ro'
-    - '/var/run/docker.sock:/tmp/docker.sock:ro'
   registrator:
     image: gliderlabs/registrator:latest
     network_mode: host
@@ -72,9 +91,9 @@ services:
     restart: unless-stopped
     volumes:
     - '/etc/localtime:/etc/localtime:ro'
-    - '/mnt/docker/volumes/vault_logs:/vault/logs'
-    - '/mnt/docker/volumes/vault_file:/vault/file'
-    - '/mnt/docker/volumes/vault_config:/vault/config'
+    - '${CONTAINER_VOL_DIR}/vault_logs:/vault/logs'
+    - '${CONTAINER_VOL_DIR}/vault_file:/vault/file'
+    - '${CONTAINER_VOL_DIR}/vault_config:/vault/config'
   vault-ui:
     image: djenriquez/vault-ui
     network_mode: bridge
@@ -86,6 +105,10 @@ services:
     labels:
       io.rancher.container.pull_image: always
       io.rancher.container.hostname_override: container_name
+      traefik.backend: vault-ui
+      traefik.frontend.rule: Host:vaultui.$TRAEFIK_DOMAIN
+      traefik.port: 8000
+      traefik.enable: 'true'
     restart: unless-stopped
     volumes:
     - '/etc/localtime:/etc/localtime:ro'

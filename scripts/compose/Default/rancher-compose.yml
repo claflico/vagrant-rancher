@@ -1,17 +1,17 @@
 version: '2'
 services:
-  consul-server:
+  vault-server:
     scale: 1
     start_on_create: true
-  nginx-proxy:
+  traefik:
     scale: 1
     start_on_create: true
   registrator:
     scale: 1
     start_on_create: true
-  vault-server:
+  vault-ui:
     scale: 1
     start_on_create: true
-  vault-ui:
+  consul-server:
     scale: 1
     start_on_create: true

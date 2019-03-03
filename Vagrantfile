@@ -1,9 +1,10 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
   config.vm.communicator = "ssh"
-  config.vm.hostname = "#{Socket.gethostname.split(/\./)[0]}.vm"
+  config.vm.hostname = "#{Socket.gethostname.split(/\./)[0]}.lvh.me"
   config.vm.network "forwarded_port", guest: 53, host: 5300 #dnsmasq
-  config.vm.network "forwarded_port", guest: 80, host: 8000 #nginx-proxy
+  config.vm.network "forwarded_port", guest: 80, host: 8000 #traefik
+  config.vm.network "forwarded_port", guest: 443, host: 8443 #traefik
   config.vm.network "forwarded_port", guest: 1080, host: 1080
   for i in 2000..2100
     config.vm.network :forwarded_port, guest: i, host: i
@@ -12,7 +13,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 5000, host: 5000 #logstash
   config.vm.network "forwarded_port", guest: 5380, host: 5380 #dnsmasq
   config.vm.network "forwarded_port", guest: 5601, host: 5601 #kibana
-  config.vm.network "forwarded_port", guest: 8080, host: 8080 #squid
+  config.vm.network "forwarded_port", guest: 8080, host: 8080 #traefik
   config.vm.network "forwarded_port", guest: 8100, host: 8100 #vaultui
   config.vm.network "forwarded_port", guest: 8200, host: 8200 #vault
   config.vm.network "forwarded_port", guest: 8500, host: 8500 #consul
