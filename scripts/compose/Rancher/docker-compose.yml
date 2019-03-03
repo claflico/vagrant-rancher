@@ -16,6 +16,11 @@ services:
     - $SERVER_IP:53:53/udp
     - $DNSMASQ_WEB_PORT:8080
     restart: unless-stopped
+    labels:
+    - "traefik.backend=dnsmasq"
+    - "traefik.frontend.rule=Host:dnsmasq.${TRAEFIK_DOMAIN}"
+    - "traefik.port=8080"
+    - "traefik.enable=true"
   rancher-mysql:
     image: percona:$PERCONA_VERSION
     container_name: rancher-mysql
@@ -57,3 +62,8 @@ services:
     ports:
     - $RANCHER_PORT:8080
     restart: unless-stopped
+    labels:
+    - "traefik.backend=rancher-server"
+    - "traefik.frontend.rule=Host:rancher.${TRAEFIK_DOMAIN}"
+    - "traefik.port=8080"
+    - "traefik.enable=true"

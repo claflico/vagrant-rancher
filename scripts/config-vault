@@ -30,9 +30,9 @@ else
 fi
 
 echo "Unsealing Vault"
-vault unseal $(cget unseal-key-1)
-vault unseal $(cget unseal-key-2)
-vault unseal $(cget unseal-key-3)
+vault operator unseal $(cget unseal-key-1)
+vault operator unseal $(cget unseal-key-2)
+vault operator unseal $(cget unseal-key-3)
 
 echo "Vault setup complete."
 echo "The vault unseal keys and root token have been stored in Consul K/V."
