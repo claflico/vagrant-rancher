@@ -60,6 +60,9 @@ services:
     network_mode: host
     depends_on:
     - consul-server
+    - traefik
+    - vault-server
+    - vault-ui
     command:
     - "consul://localhost:$CONSUL_WEB_PORT"
     labels:
