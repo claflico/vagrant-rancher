@@ -119,8 +119,8 @@ sudo chmod 777 /usr/local/bin/*
 cd /vagrant/scripts/compose/default
 /usr/local/bin/rancher-compose up -d
 cd $CWD
-echo "Sleeping a minute to give default stack time to intialize"
-sleep 60
+echo "Sleeping 2 minutes to give default stack time to intialize"
+sleep 120
 
 # Install & configure vault
 curl -k -sS -L ${VAULT_URL}/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip -o /tmp/vault.zip
